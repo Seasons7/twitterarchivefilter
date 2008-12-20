@@ -3,6 +3,7 @@ $KCODE="u"
 # ====================================================================================
 # Twitter Archive Filter
 #
+# 1.0.6 => 2008/05/29 by Seasons
 # 1.0.5 => 2008/05/08 by Seasons
 # 1.0.4 => 2008/05/07 by Seasons
 # 1.0.3 => 2008/05/03 by Seasons
@@ -116,7 +117,7 @@ class TwitterArchiveFilter
       break if count == @pagenum
       html = getPageArchive( nextlink )
       items = getItems( html )
-      next unless items or items[:messages] or items[:times] #=> Retry if failed get items...
+      next unless ( items and items[:messages] and items[:times] ) #=> Retry if failed get items...
       addItems( items )
       nextlink = getNextLink( html )
       puts "GetPage [#{count += 1}]"

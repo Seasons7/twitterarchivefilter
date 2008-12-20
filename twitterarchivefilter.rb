@@ -3,6 +3,7 @@ $KCODE="u"
 # ====================================================================================
 # Twitter Archive Filter
 #
+# 1.0.4 => 2008/05/07 by Seasons
 # 1.0.3 => 2008/05/03 by Seasons
 # 1.0.2 => 2008/04/24 by Seasons
 # 1.0.1 => 2008/04/21 by Seasons
@@ -136,7 +137,7 @@ class TwitterArchiveFilter
   # ===========================================================================
   def getItems( html )
     items = Scraper.define do
-      process 'td.content>span.entry_content' , "messages[]" => :text
+      process 'td.content>span.entry-content' , "messages[]" => :text
       process 'td.content>span.meta>a>abbr.published' , "times[]" => "@title"
       result :messages , :times
     end.scrape( html , :parser_options => {:char_encoding=>'utf8'} )

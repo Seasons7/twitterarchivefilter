@@ -3,6 +3,7 @@ $KCODE="u"
 # ====================================================================================
 # Twitter Archive Filter
 #
+# 1.0.7 => 2009/01/02 by Seasons
 # 1.0.6 => 2008/05/29 by Seasons
 # 1.0.5 => 2008/05/08 by Seasons
 # 1.0.4 => 2008/05/07 by Seasons
@@ -23,7 +24,10 @@ require 'scrapi'
 require 'net/http'
 require 'kconv'
 require 'optparse'
-require '.twitter_user_pass' #=> Twitter Username & Password
+
+$username=nil
+$password=nil
+load '.twitter_user_pass' #=> Twitter Username & Password
 
 $stdout.sync = true
 
@@ -36,8 +40,7 @@ end
 #-------------------------------------------------------------------------------------
 # System Config
 #-------------------------------------------------------------------------------------
-BASEPATH = '/account/archive' #=> default page archive to get
-#BASEPATH = '/home' #=> if you want a recent timeline
+BASEPATH = '/home' #=> if you want a recent timeline
 #-------------------------------------------------------------------------------------
 
 # *=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=*=
@@ -139,9 +142,9 @@ class TwitterArchiveFilter
   # ===========================================================================
   def getItems( html )
     items = Scraper.define do
-      process 'td.content>span.entry_content' , "messages[]" => :text
-      process 'td.content>span.entry-content' , "messages[]" => :text
-      process 'td.content>span.meta>a>abbr.published' , "times[]" => "@title"
+      process 'span.entry_content' , "messages[]" => :text
+      process 'span.entry-content' , "messages[]" => :text
+      process 'span.meta>a>span.published' , "times[]" => "@title"
       result :messages , :times
     end.scrape( html , :parser_options => {:char_encoding=>'utf8'} )
     items
@@ -175,7 +178,7 @@ class TwitterArchiveFilter
   def getPageArchive( page )
     html = ""
     req = Net::HTTP::Get.new( page )
-    req.basic_auth( USERNAME , PASSWORD ) unless @username
+    req.basic_auth( $username , $password ) if $username and $password
     rs = @http.request( req )
     return html unless rs
     html= rs.body

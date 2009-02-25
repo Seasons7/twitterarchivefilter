@@ -3,6 +3,7 @@ $KCODE="u"
 # ====================================================================================
 # Twitter Archive Filter
 #
+# 1.0.8 => 2009/02/26 by Seasons
 # 1.0.7 => 2009/01/02 by Seasons
 # 1.0.6 => 2008/05/29 by Seasons
 # 1.0.5 => 2008/05/08 by Seasons
@@ -24,6 +25,7 @@ require 'scrapi'
 require 'net/http'
 require 'kconv'
 require 'optparse'
+require 'pp'
 
 $username=nil
 $password=nil
@@ -160,10 +162,12 @@ class TwitterArchiveFilter
   # ===========================================================================
   def getNextLink( html )
     links = Scraper.define do
-      process 'div.pagination>a' , :url => "@href" , :kind => :text
-      result :url , :kind
+      process 'a[href*="page="]' , "pages[]" => "@href" , "kinds[]" => :text
+      result :pages , :kinds
     end.scrape( html , :parser_options => {:char_encoding=>'utf8'} )
-    links[:kind] =~ /Older/ ? links[:url] : nil
+	i = links[:kinds].index links[:kinds].find{|v| v =~ /Older/ }
+	return nil unless i
+    return links[:pages][i]
 
   end
 

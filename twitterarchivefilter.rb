@@ -3,6 +3,7 @@ $KCODE="u"
 # ====================================================================================
 # Twitter Archive Filter
 #
+# 1.0.9 => 2009/03/02 by Seasons
 # 1.0.8 => 2009/02/26 by Seasons
 # 1.0.7 => 2009/01/02 by Seasons
 # 1.0.6 => 2008/05/29 by Seasons
@@ -146,7 +147,7 @@ class TwitterArchiveFilter
     items = Scraper.define do
       process 'span.entry_content' , "messages[]" => :text
       process 'span.entry-content' , "messages[]" => :text
-      process 'span.meta>a>span.published' , "times[]" => "@title"
+      process 'a.entry-date>span.published' , "times[]" => :text
       result :messages , :times
     end.scrape( html , :parser_options => {:char_encoding=>'utf8'} )
     items
@@ -165,8 +166,8 @@ class TwitterArchiveFilter
       process 'a[href*="page="]' , "pages[]" => "@href" , "kinds[]" => :text
       result :pages , :kinds
     end.scrape( html , :parser_options => {:char_encoding=>'utf8'} )
-	i = links[:kinds].index links[:kinds].find{|v| v =~ /Older/ }
-	return nil unless i
+	  i = links[:kinds].index links[:kinds].find{|v| v =~ /Older/ }
+	  return nil unless i
     return links[:pages][i]
 
   end
